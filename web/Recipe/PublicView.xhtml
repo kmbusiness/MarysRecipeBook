@@ -1,0 +1,155 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+      
+
+
+    <h:head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta http-equiv="X-UA-Conpatible" content="IE=edge" />
+        <h:outputStylesheet library="css" name="bootstrap.min.css"></h:outputStylesheet>
+        <h:outputStylesheet library="css" name="mycss.css"></h:outputStylesheet>
+        <h:outputStylesheet library="css" name="font-awesome.min.css"></h:outputStylesheet>
+        <h:outputStylesheet library="css" name="jsfcrud.css"/>
+        <link href="https://fonts.googleapis.com/css?family=Baloo|Roboto:900" rel="stylesheet"></link>
+        <title><h:outputText value="#{RecipeManager.thisRecipe.recipeName}" /> Recipe</title>
+    </h:head>
+    <h:body>
+       <div class="navbar navbar-inverse navbar-fixed-top first-navbar" id="flipkart-navbar">
+          <div class="first-container container">
+  
+              <div class="row row2">
+                  <div class="col-sm-2 marylogo">
+                      <h2 style="margin:0px;"><span class="smallnav menu" onclick="openNav()">☰ Mary's Recipe Collection</span></h2>
+                      <a href="../index.xhtml"><span class="largenav"><img class="img-responsive center-block" src="../marylogo.png" alt="Recipe Logo"></img></span></a>
+                  </div>
+                  <div class="flipkart-navbar-search smallsearch col-sm-8 col-xs-11">
+                      <div class="row">
+                        <h:form>
+                        <h:inputText id="search" a:placeholder="Search..." value="#{RecipeManager.search}" styleClass="flipkart-navbar-input col-xs-11"/>
+                        <h:commandButton value="Submit" action="#{RecipeManager.searching()}" styleClass="flipkart-navbar-button col-xs-1"/>
+                        </h:form>
+                      </div>
+                  </div>
+                  <div class="largenav col-sm-2">
+<!--                    <ul class="largenav pull-right">
+                      <li class="upper-links"><a class="links" href="#" data-toggle="modal" data-target=".bs-example-modal-sm">Log In</a></li>
+                      <li class="upper-links dropdown"><a class="links" href="#">Dropdown</a>
+                          <ul class="dropdown-menu">
+                              <li class="profile-li"><a class="profile-links" href="RecipeCreate.xhtml">Create</a></li>
+                              <li class="profile-li"><a class="profile-links" href="#">Edit</a></li>
+                          </ul>
+                      </li>
+                  </ul>-->
+
+                  </div>
+                
+              </div>
+          </div>
+      </div>
+      <div id="mySidenav" class="sidenav">
+          <div class="container" style="background-color: #c43835; padding-top: 10px;">
+              <span class="sidenav-heading">Links</span>
+              <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+          </div>
+          <a href="../index.xhtml">Home</a>
+
+
+      </div>
+        <div id="content" class="container">
+          <div class="panel panel-default"> 
+            <div class="panel-heading">
+              <div class="row">
+                <div class="col-md-8">
+                  <h2><h:outputText value="#{RecipeManager.thisRecipe.recipeName}" /></h2>
+                  <p><h:outputText value="#{RecipeManager.thisRecipe.replacement}" escape="false"/></p>
+                  <hr/>
+                  <ul class="list-inline">
+                    <li><b>Prep Time: </b><h:outputText value="#{RecipeManager.thisRecipe.prepTime}" /></li>
+                    <li><b>Cook Time: </b><h:outputText value="#{RecipeManager.thisRecipe.cookTime}" /></li>
+                    <li><b>Servings: </b> 
+                      <h:form>
+                        <h:inputText id="serveInput" styleClass="" value="#{RecipeManager.myScale}" p:placeholder="supply value"/>
+                        <h:commandButton styleClass="btn btn-primary" value="Submit" action="#{RecipeManager.scale()}" />
+                      </h:form>
+                    </li>
+                  </ul>
+                  <hr/>                                  
+                </div>
+                <div class="col-md-4">
+                  <img src="../#{RecipeManager.thisRecipe.image}" class="img-responsive" />
+                </div>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="table-responsive">
+                    <h4 class="text-center">Ingredients</h4>
+                    <h:form>
+                    <h:dataTable styleClass="table table-condensed" value="#{RecipeManager.myIngre}" var="ingre" >
+                      <h:column>
+                          <f:facet name="header"> Name </f:facet>
+                          <h:outputText value="#{ingre.rName}"/>
+                      </h:column>
+                      <h:column>
+                          <f:facet name="header"> Amount </f:facet>
+                          <h:outputText value = "#{ingre.amount}" >
+                            <f:convertNumber pattern="#0.00" />
+                        </h:outputText> #{ingre.unit}
+
+                      </h:column>
+                  </h:dataTable>
+                  </h:form>
+                    <br/>
+                    <h4 class="text-center">Types</h4>
+                  <h:form>
+                    <h:dataTable styleClass="table table-condensed" value="#{RecipeManager.maiType}" var="type" >
+                      <h:column>
+                          <f:facet name="header"> Name </f:facet>
+                          <h:outputText value="#{type.type}"/>
+                      </h:column>
+                      
+                    </h:dataTable>
+
+                    <br/>
+                    
+                  </h:form>
+                </div>
+                </div>
+                <div class="col-md-6">
+                  <h4 class="text-center">Steps</h4>
+                  <span><h:outputText value="#{RecipeManager.thisRecipe.desRep}" escape="false"/></span>
+                </div>
+              </div>
+              
+            </div>
+          </div><!--   panel      -->
+        </div>
+        
+
+          <footer>
+            <div class="container">
+                <p>Copyright ©2017 Mary's Recipe Book</p>
+                     <ul class="list-inline">
+                    <!--        <li>About</li>-->
+                    <!--        <li>Contact</li>-->
+                    <!--        <li><a class="" href="privacy.xhtml">Privacy</a></li>-->
+                    </ul>  
+             </div>
+          </footer>
+        
+
+        <h:outputScript library="js" name="jquery-3.1.1.min.js"/>
+        <h:outputScript library="js" name="bootstrap.min.js"/>
+        <h:outputScript library="js" name="function.js"/>
+    </h:body>
+</html>
+

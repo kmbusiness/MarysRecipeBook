@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta http-equiv="X-UA-Conpatible" content="IE=edge" />
+        <h:outputStylesheet library="css" name="bootstrap.min.css"></h:outputStylesheet>
+        <h:outputStylesheet library="css" name="mycss.css"></h:outputStylesheet>
+        <h:outputStylesheet library="css" name="font-awesome.min.css"></h:outputStylesheet>
+        <h:outputStylesheet library="css" name="jsfcrud.css"/>
+        <link href="https://fonts.googleapis.com/css?family=Baloo|Roboto:900" rel="stylesheet"></link>
+        <title>Search Results</title>
+    </h:head>
+    <h:body>
+       <div class="navbar navbar-inverse navbar-fixed-top first-navbar" id="flipkart-navbar">
+          <div class="first-container container">
+  
+              <div class="row row2">
+                  <div class="col-sm-2 marylogo">
+                      <h2 style="margin:0px;"><span class="smallnav menu" onclick="openNav()">☰ Mary's Recipe Collection</span></h2>
+                      <a href="index.xhtml"><span class="largenav"><img class="img-responsive center-block" src="../marylogo.png" alt="Recipe Logo"></img></span></a>
+                  </div>
+                  <div class="flipkart-navbar-search smallsearch col-sm-8 col-xs-11">
+                      <div class="row">
+                        <h:form>
+                        <h:inputText id="search" a:placeholder="Search..." value="#{RecipeManager.search}" styleClass="flipkart-navbar-input col-xs-11"/>
+                        <h:commandButton value="Submit" action="#{RecipeManager.searching()}" styleClass="flipkart-navbar-button col-xs-1"/>
+                        </h:form>
+                      </div>
+                  </div>
+                  <div class="largenav col-sm-2">
+                    <ul class="largenav pull-right">
+                      <li class="upper-links"><a class="links" href="#" data-toggle="modal" data-target=".bs-example-modal-sm">Log In</a></li>
+
+                  </ul>
+
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div id="mySidenav" class="sidenav">
+          <div class="container" style="background-color: #c43835; padding-top: 10px;">
+              <span class="sidenav-heading">Links</span>
+              <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+          </div>
+          <a href="index.xhtml">Home</a>
+
+
+      </div>
+        <!--modal-->
+        <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div id="test">   
+                        <h2>Login Form</h2>
+                        <form method="post" action="validation.jsp">
+                            <div class="container">
+                                <label><b>Username</b></label>
+                                <input type="text" placeholder="Enter Username" name="username" required="required"/>
+                                <label><b>Password</b></label>
+                                <input type="password" placeholder="Enter Password" name="password" required="required"/>
+                                <button type="submit">Login</button>
+   
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+
+                        <button type="button" class="cancelbtn" data-dismiss="modal">Cancel</button>
+                    </div>      
+                </div>
+            </div>
+        </div>
+
+      <div class="jumbotron jumbotron-sm">
+          <div class="container">
+              <div class="row">
+                  <div class="col-sm-12 col-lg-12 create-title">
+                      <h2>Search Results</h2>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+              
+                <ui:param name="wut" value="#{RecipeManager.mySearch.size()}"/>
+                <!-- Rows -->
+                <div class="container-fluid custom-boxes custom-image">
+                  <div class="row">
+                    <ui:repeat var="j" value="#{RecipeManager.mySearch}" size = "#{wut}" >
+                      <div class="col-sm-4" id="">
+                        <div class="panel panel-default">              
+                            <div class="panel-body">
+                              <h:link outcome="#{RecipeManager.publicview()}">
+                                <figure><img src="#{j.image}" alt="#{j.recipeName}"></img></figure>
+                                <f:param name="book" value="#{j.recipeName}"/>                            
+                              </h:link>
+                                
+                                <div class="recipe-title">
+                                    <h:link value="#{j.recipeName}" outcome="#{RecipeManager.publicview()}">
+                                        <f:param name="book" value="#{j.recipeName}"/>
+                                    </h:link>
+                                </div>
+                            </div>
+                        </div>
+                      </div>
+                    </ui:repeat>
+                  </div>
+                </div>
+             
+            </div>
+        </div>
+      </div>
+
+            
+        <h:outputScript library="js" name="jquery-3.1.1.min.js"/>
+        <h:outputScript library="js" name="bootstrap.min.js"/>
+        <h:outputScript library="js" name="function.js"/>
+    </h:body>
+</html>
+
