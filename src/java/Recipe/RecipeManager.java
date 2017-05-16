@@ -270,7 +270,7 @@ public class RecipeManager implements Serializable {
                 ingre.setAmount(rs.getDouble("amount"));
                 ingre.setUnit(rs.getString("unit"));
                 myIngre.add(ingre);
-                System.out.println("WTF LOL" );
+                System.out.println("Yup" );
             }
         } catch (SQLException e) {
         }
@@ -602,6 +602,8 @@ public class RecipeManager implements Serializable {
         return "/PrivateSearch.xhtml?faces-redirect=true";
     }
     
+    
+    //Public Search Does not work
     public String publicSearching() {
         mySearch = new ArrayList<Recipe>();
         for (int i = 0; i < recs.size(); i++) {
@@ -758,6 +760,16 @@ public class RecipeManager implements Serializable {
             myIngre.get(i).setAmount(myIngre.get(i).getAmount()*myRatio);
         }
         return "/Recipe/RecipeView.xhtml";
+    }
+    
+    public String publicscale() {
+        initializeIngredient();
+        first = false;
+        myRatio = (double)myScale/thisRecipe.getServings();
+        for(int i = 0; i < myIngre.size(); i++) {
+            myIngre.get(i).setAmount(myIngre.get(i).getAmount()*myRatio);
+        }
+        return "/Recipe/PublicView.xhtml";
     }
     
     public String create() {

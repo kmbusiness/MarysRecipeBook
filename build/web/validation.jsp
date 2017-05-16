@@ -31,6 +31,6 @@
     } catch (Exception e) {
 //        String redirectURL = "http://localhost:8080/RecipeCollection/";
 //        response.sendRedirect(redirectURL);
-        out.println("WTF");
+        out.println("Contact Admin for help.");
     }
 %> 

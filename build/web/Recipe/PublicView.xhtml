@@ -34,7 +34,7 @@
                       <div class="row">
                         <h:form>
                         <h:inputText id="search" a:placeholder="Search..." value="#{RecipeManager.search}" styleClass="flipkart-navbar-input col-xs-11"/>
-                        <h:commandButton value="Submit" action="#{RecipeManager.searching()}" styleClass="flipkart-navbar-button col-xs-1"/>
+                        <h:commandButton value="Submit" action="#{RecipeManager.publicSearching()}" styleClass="flipkart-navbar-button col-xs-1"/>
                         </h:form>
                       </div>
                   </div>
@@ -77,7 +77,7 @@
                     <li><b>Servings: </b> 
                       <h:form>
                         <h:inputText id="serveInput" styleClass="" value="#{RecipeManager.myScale}" p:placeholder="supply value"/>
-                        <h:commandButton styleClass="btn btn-primary" value="Submit" action="#{RecipeManager.scale()}" />
+                        <h:commandButton styleClass="btn btn-primary" value="Submit" action="#{RecipeManager.publicscale()}" />
                       </h:form>
                     </li>
                   </ul>
