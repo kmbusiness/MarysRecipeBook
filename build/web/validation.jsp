@@ -10,7 +10,7 @@
         String userName = request.getParameter("username");
         String password = request.getParameter("password");
         Class.forName("com.mysql.jdbc.Driver");  // MySQL database connection
-        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/cookbookfinal?zeroDateTimeBehavior=convertToNull", "root", "123456");
+        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/yeet?zeroDateTimeBehavior=convertToNull", "root", "1234");
         PreparedStatement pst = conn.prepareStatement("Select userName,password from owner where userName = ? and password = ?");
         pst.setString(1, userName);
         pst.setString(2, password);

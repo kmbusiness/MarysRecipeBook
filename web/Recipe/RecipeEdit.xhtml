@@ -76,7 +76,7 @@
         <div class="row">
           <div class="col-sm-12">
             <div class="well well-sm">
-              <h:form onsubmit="stripHTML()" >
+              <h:form onsubmit="stripHTML()" enctype="multipart/form-data">
                   <div class="row">
                     <div class="col-md-6">
                       <h:outputLabel value="Recipe Name: " />
@@ -162,8 +162,8 @@
                       
                       
                       <!-- Does not work />-->
-                      <!-- <h:outputLabel value="Image: " />
-                      <h:inputFile value="#{RecipeManager.thisRecipe.uploadImage}" />-->
+                      <h:outputLabel value="Image: " />
+                      <h:inputFile value="#{RecipeManager.thisRecipe.uploadImage}" />
 
                     </div>
                   </div>

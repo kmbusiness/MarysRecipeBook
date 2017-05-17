@@ -1,7 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+    Team Yellow
  */
 package Recipe;
 
@@ -32,6 +30,7 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+
 import com.dropbox.core.DbxAppInfo;
 import com.dropbox.core.DbxAuthFinish;
 import com.dropbox.core.DbxClient;
@@ -96,11 +95,13 @@ public class RecipeManager implements Serializable {
         newRecipe = new Recipe();
         myName = "";
         ResultSet rs = null;
+
         client = new DbxClient(new DbxRequestConfig("javarootsDropbox/1.0",
                 Locale.getDefault().toString()), "ASe-8HbDCnoAAAAAAAASXWY1JyJMCU6TimtaDBanwoJG4higmvwrxddhuE0aQdkk");
+
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cookbookfinal?zeroDateTimeBehavior=convertToNull", "root", "123456");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/yeet?zeroDateTimeBehavior=convertToNull", "root", "1234");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(RecipeManager.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
@@ -113,7 +114,6 @@ public class RecipeManager implements Serializable {
         if (first) {
             initializeMyType();
         }
-        System.out.println("OMGE WEWEAMOP");
         return maiType;
     }
 
@@ -140,7 +140,6 @@ public class RecipeManager implements Serializable {
                 typ.setType(rs.getString("typeName"));
                 typ.setRecipeID(rs.getInt("recipeID"));
                 maiType.add(typ);
-                System.out.println("LOL YES");
             }
         } catch (SQLException e) {
         }
@@ -419,23 +418,30 @@ public class RecipeManager implements Serializable {
 
         // Upload Image
         String sharedUrl = null;
-        try {
-            InputStream inputStream;
-
-            inputStream = newRecipe.getUploadImage().getInputStream();
+        if (newRecipe.getUploadImage() != null) {
             try {
-                DbxEntry.File uploadedFile = client.uploadFile("/" + newRecipe.getUploadImage().getSubmittedFileName(),
-                        DbxWriteMode.add(), newRecipe.getUploadImage().getSize(), inputStream);
-                sharedUrl = client.createShareableUrl("/" + newRecipe.getUploadImage().getSubmittedFileName());
-                System.out.println("Uploaded: " + uploadedFile.toString() + " URL " + sharedUrl);
-            } catch (DbxException ex) {
+                InputStream inputStream;
+
+                inputStream = newRecipe.getUploadImage().getInputStream();
+                try {
+
+                    DbxEntry.File uploadedFile = client.uploadFile("/" + newRecipe.getUploadImage().getSubmittedFileName(),
+                            DbxWriteMode.add(), newRecipe.getUploadImage().getSize(), inputStream);
+                    sharedUrl = client.createShareableUrl("/" + newRecipe.getUploadImage().getSubmittedFileName());
+                    System.out.println("Uploaded: " + uploadedFile.toString() + " URL " + sharedUrl);
+
+                    //Default picture
+                } catch (DbxException ex) {
+                    Logger.getLogger(RecipeManager.class.getName()).log(Level.SEVERE, null, ex);
+                } finally {
+                    inputStream.close();
+                }
+                sharedUrl = sharedUrl.substring(0, sharedUrl.length() - 1) + "1";
+            } catch (IOException ex) {
                 Logger.getLogger(RecipeManager.class.getName()).log(Level.SEVERE, null, ex);
-            } finally {
-                inputStream.close();
             }
-            sharedUrl = sharedUrl.substring(0, sharedUrl.length() - 1) + "1";
-        } catch (IOException ex) {
-            Logger.getLogger(RecipeManager.class.getName()).log(Level.SEVERE, null, ex);
+        } else {
+            sharedUrl = "https://www.dropbox.com/s/u7twhnxyua2kzm0/Default.jpg?dl=1";
         }
         // Upload Image
 
@@ -454,11 +460,7 @@ public class RecipeManager implements Serializable {
             ps.setString(4, newRecipe.getDescription());
             ps.setString(5, newRecipe.getSteps());
             ps.setInt(6, autoID);
-            if (newRecipe.getUploadImage() != null) {
-                ps.setString(7, sharedUrl);
-            } else {
-                ps.setString(7, "Default.png");
-            }
+            ps.setString(7, sharedUrl); //Get Image
             ps.setString(8, newRecipe.getPrepTime());
             ps.setString(9, newRecipe.getCookTime());
             ps.setInt(10, newRecipe.getServings());
@@ -495,16 +497,41 @@ public class RecipeManager implements Serializable {
     }
 
     public String update() {
+        // Upload Image
+        String sharedUrl = null;
+        sharedUrl = thisRecipe.getImage();
+        if (thisRecipe.getUploadImage() != null) {
+            try {
+                InputStream inputStream;
+                inputStream = thisRecipe.getUploadImage().getInputStream();
+                try {
+                    DbxEntry.File uploadedFile = client.uploadFile("/" + thisRecipe.getUploadImage().getSubmittedFileName(),
+                            DbxWriteMode.add(), thisRecipe.getUploadImage().getSize(), inputStream);
+                    sharedUrl = client.createShareableUrl("/" + thisRecipe.getUploadImage().getSubmittedFileName());
+                    System.out.println("Uploaded: " + uploadedFile.toString() + " URL " + sharedUrl);
+                    //Default picture
+                } catch (DbxException ex) {
+                    Logger.getLogger(RecipeManager.class.getName()).log(Level.SEVERE, null, ex);
+                } finally {
+                    inputStream.close();
+                }
+                sharedUrl = sharedUrl.substring(0, sharedUrl.length() - 1) + "1";
+            } catch (IOException ex) {
+                Logger.getLogger(RecipeManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        // Upload Image
+        
         SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
         try {
-            String sql = "UPDATE Recipe "
+            String sql = "UPDATE recipe "
                     + "SET recipeName=?,description=?,steps=?,image=?,prepTime=?,cookTime=?,servings=? "
                     + "WHERE recipeID=" + thisRecipe.getRecipeID();
             ps = con.prepareStatement(sql);
             ps.setString(1, thisRecipe.getRecipeName());
             ps.setString(2, thisRecipe.getDescription());
             ps.setString(3, thisRecipe.getSteps());
-            ps.setString(4, thisRecipe.getImage());
+            ps.setString(4, sharedUrl);
             ps.setString(5, thisRecipe.getPrepTime());
             ps.setString(6, thisRecipe.getCookTime());
             ps.setInt(7, thisRecipe.getServings());
@@ -516,6 +543,7 @@ public class RecipeManager implements Serializable {
         editIngreUpdate();
         editTypeUpdate();
         init();
+        thisRecipe.setImage(sharedUrl);
         return "/Recipe/RecipeView";
     }
 

@@ -32,7 +32,7 @@ public class OwnerManager {
         try {
             owners = new ArrayList<String>();
             Class.forName("com.mysql.jdbc.Driver");
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cookbookfinal?zeroDateTimeBehavior=convertToNull", "root", "123456");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/yeet?zeroDateTimeBehavior=convertToNull", "root", "1234");
             String sql = "select * from owner";
             ps = con.prepareStatement(sql);
             rs = ps.executeQuery();

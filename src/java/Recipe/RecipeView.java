@@ -39,7 +39,7 @@ public class RecipeView implements Serializable{
         thisRecipe = new Recipe();
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cookbookfinal?zeroDateTimeBehavior=convertToNull", "root", "123456");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/yeet?zeroDateTimeBehavior=convertToNull", "root", "1234");
             String sql = "select * from recipe";
             ps = con.prepareStatement(sql);
             rs = ps.executeQuery();
