@@ -24,7 +24,6 @@ public class Recipe implements Serializable{
     private String replacement;
     private String desRep;
     private Part uploadImage;
-    private File dropbocImage;
     private String prepTime;
     private String cookTime;
     private int servings;
@@ -35,14 +34,6 @@ public class Recipe implements Serializable{
             return 1;
         else
             return -1;
-    }
-
-    public File getDropbocImage() {
-        return dropbocImage;
-    }
-
-    public void setDropbocImage(File dropbocImage) {
-        this.dropbocImage = dropbocImage;
     }
     
     public void setImage(String Image) {

@@ -75,7 +75,6 @@
                     <li><b>Prep Time: </b><h:outputText value="#{RecipeManager.thisRecipe.prepTime}" /></li>
                     <li><b>Cook Time: </b><h:outputText value="#{RecipeManager.thisRecipe.cookTime}" /></li>
                     <li><b>Servings: </b> 
-                     
                       <h:form>
                         <h:inputText id="serveInput" styleClass="" value="#{RecipeManager.myScale}" p:placeholder="supply value"/>
                         <h:commandButton styleClass="btn btn-primary" value="Submit" action="#{RecipeManager.publicscale()}" />
