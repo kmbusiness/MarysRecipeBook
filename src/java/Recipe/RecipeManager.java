@@ -32,6 +32,16 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+import com.dropbox.core.DbxAppInfo;
+import com.dropbox.core.DbxAuthFinish;
+import com.dropbox.core.DbxClient;
+import com.dropbox.core.DbxEntry;
+import com.dropbox.core.DbxException;
+import com.dropbox.core.DbxRequestConfig;
+import com.dropbox.core.DbxWebAuthNoRedirect;
+import com.dropbox.core.DbxWriteMode;
+import java.io.InputStream;
+import java.util.Locale;
 
 /**
  *
@@ -74,6 +84,7 @@ public class RecipeManager implements Serializable {
     int autoID = 0;
     double myRatio = 0;
     boolean first = true;
+    DbxClient client;
 
     /**
      * Creates a new instance of Recipe
@@ -85,21 +96,23 @@ public class RecipeManager implements Serializable {
         newRecipe = new Recipe();
         myName = "";
         ResultSet rs = null;
-       
+        client = new DbxClient(new DbxRequestConfig("javarootsDropbox/1.0",
+                Locale.getDefault().toString()), "ASe-8HbDCnoAAAAAAAASXWY1JyJMCU6TimtaDBanwoJG4higmvwrxddhuE0aQdkk");
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/yeet?zeroDateTimeBehavior=convertToNull", "root", "1234");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cookbookfinal?zeroDateTimeBehavior=convertToNull", "root", "123456");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(RecipeManager.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(RecipeManager.class.getName()).log(Level.SEVERE, null, ex);
         }
-             init();
+        init();
     }
 
     public List<Type> getMaiType() {
-        if (first)
+        if (first) {
             initializeMyType();
+        }
         System.out.println("OMGE WEWEAMOP");
         return maiType;
     }
@@ -108,7 +121,6 @@ public class RecipeManager implements Serializable {
         this.maiType = maiType;
     }
 
-    
     public List getMyType() {
         return myType;
     }
@@ -116,7 +128,7 @@ public class RecipeManager implements Serializable {
     public void setMyType(List myType) {
         this.myType = myType;
     }
-    
+
     public void initializeMyType() {
         maiType = new ArrayList<Type>();
         try {
@@ -133,10 +145,10 @@ public class RecipeManager implements Serializable {
         } catch (SQLException e) {
         }
     }
-    
+
     public String deleteTypee(Type typ) {
         try {
-            
+
             String sql = "delete from recType where recipeID=? && typeName=?";
             ps = con.prepareStatement(sql);
             ps.setInt(1, typ.getRecipeID());
@@ -148,7 +160,7 @@ public class RecipeManager implements Serializable {
         maiType.remove(typ);
         return null;
     }
-    
+
     public String insertType() {
         Type typ = new Type(thisRecipe.getRecipeID(), typeName);
         maiType.add(typ);
@@ -163,8 +175,7 @@ public class RecipeManager implements Serializable {
     public void setTypeName(String typeName) {
         this.typeName = typeName;
     }
-    
-    
+
     public boolean isFirst() {
         return first;
     }
@@ -173,7 +184,6 @@ public class RecipeManager implements Serializable {
         this.first = first;
     }
 
-    
     public int getMyScale() {
         return myScale;
     }
@@ -189,7 +199,6 @@ public class RecipeManager implements Serializable {
     public void setMyRatio(double myRatio) {
         this.myRatio = myRatio;
     }
-
 
     public List<Recipe> getRecsByName() {
         recsByName = new ArrayList<Recipe>();
@@ -258,6 +267,7 @@ public class RecipeManager implements Serializable {
 
         return myIngre;
     }
+
     public void initializeIngredient() {
         myIngre = new ArrayList<Ingredient>();
         try {
@@ -270,12 +280,12 @@ public class RecipeManager implements Serializable {
                 ingre.setAmount(rs.getDouble("amount"));
                 ingre.setUnit(rs.getString("unit"));
                 myIngre.add(ingre);
-                System.out.println("Yup" );
+                System.out.println("Yup");
             }
         } catch (SQLException e) {
         }
     }
-    
+
     public void setMyIngre(List<Ingredient> myIngre) {
         this.myIngre = myIngre;
     }
@@ -332,10 +342,11 @@ public class RecipeManager implements Serializable {
     }
 
     public List<Recipe> getRecs() {
-        if (sortby.equals("0"))
+        if (sortby.equals("0")) {
             return recs;
-        else if (sortby.equals("1"))
+        } else if (sortby.equals("1")) {
             return getRecsByName();
+        }
         return null;
     }
 
@@ -377,16 +388,15 @@ public class RecipeManager implements Serializable {
     public String indexview() {
         view = true;
         first = true;
-        
+
         return "/Recipe/RecipeView";
     }
-    
+
     public String publicview() {
         view = true;
         first = true;
         return "/Recipe/PublicView";
     }
-    
 
     public String editview() {
         return "/Recipe/RecipeView";
@@ -401,36 +411,34 @@ public class RecipeManager implements Serializable {
     public String save() throws InterruptedException {
         int temp = 0;
         for (int i = 0; i < recs.size(); i++) {
-            if (recs.get(i).getRecipeID() > temp)
+            if (recs.get(i).getRecipeID() > temp) {
                 temp = recs.get(i).getRecipeID();
+            }
         }
         autoID = temp + 1;
-        try
-        {
-            if(newRecipe.getUploadImage() != null) {
-                InputStream in = newRecipe.getUploadImage().getInputStream();
 
-                File f = new File("/Users/johnkmnguyen/Desktop/Cookbook_v7 new n improved/RecipeCollection_2/web/"
-                        + newRecipe.getUploadImage().getSubmittedFileName());
-                f.createNewFile();
-                FileOutputStream out = new FileOutputStream(f);
+        // Upload Image
+        String sharedUrl = null;
+        try {
+            InputStream inputStream;
 
-                byte[] buffer = new byte[1024];
-                int length;
-
-                while((length = in.read(buffer)) > 0)
-                {
-                    out.write(buffer, 0, length);
-                }
-
-                out.close();
-                in.close();
+            inputStream = newRecipe.getUploadImage().getInputStream();
+            try {
+                DbxEntry.File uploadedFile = client.uploadFile("/" + newRecipe.getUploadImage().getSubmittedFileName(),
+                        DbxWriteMode.add(), newRecipe.getUploadImage().getSize(), inputStream);
+                sharedUrl = client.createShareableUrl("/" + newRecipe.getUploadImage().getSubmittedFileName());
+                System.out.println("Uploaded: " + uploadedFile.toString() + " URL " + sharedUrl);
+            } catch (DbxException ex) {
+                Logger.getLogger(RecipeManager.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                inputStream.close();
             }
-        }catch(IOException e)
-        {
-            System.out.println("LOL DOESNT WORK");
-            e.printStackTrace(System.out);
+            sharedUrl = sharedUrl.substring(0, sharedUrl.length() - 1) + "1";
+        } catch (IOException ex) {
+            Logger.getLogger(RecipeManager.class.getName()).log(Level.SEVERE, null, ex);
         }
+        // Upload Image
+
         SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
         try {
             String sql = "INSERT INTO recipe (userName,pushlishedDate,recipeName,description,steps,recipeID,image,prepTime,cookTime,servings) "
@@ -438,7 +446,7 @@ public class RecipeManager implements Serializable {
             ps = con.prepareStatement(sql);
             ps.setString(1, newRecipe.getUserName());
             Date d = new Date();
-            
+
             java.sql.Date dt = java.sql.Date.valueOf(fmt.format(d));
             thisRecipe.setPushlishedDate(d);
             ps.setDate(2, dt);
@@ -446,10 +454,11 @@ public class RecipeManager implements Serializable {
             ps.setString(4, newRecipe.getDescription());
             ps.setString(5, newRecipe.getSteps());
             ps.setInt(6, autoID);
-            if (newRecipe.getUploadImage() != null)
-                ps.setString(7, newRecipe.getUploadImage().getSubmittedFileName());
-            else
+            if (newRecipe.getUploadImage() != null) {
+                ps.setString(7, sharedUrl);
+            } else {
                 ps.setString(7, "Default.png");
+            }
             ps.setString(8, newRecipe.getPrepTime());
             ps.setString(9, newRecipe.getCookTime());
             ps.setInt(10, newRecipe.getServings());
@@ -459,12 +468,12 @@ public class RecipeManager implements Serializable {
         }
         // Waiting for the recipe to be added to DB
         //System.wait(1000);
-        
+
         insertIngreFinal(autoID);
         insertTypeFinal(autoID);
 //        try {
 //            Class.forName("com.mysql.jdbc.Driver");
-//            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/yeet?zeroDateTimeBehavior=convertToNull", "root", "1234");
+//            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cookbookfinal?zeroDateTimeBehavior=convertToNull", "root", "123456");
 //            String sql = "SELECT * FROM recipe WHERE recipeName = " + newRecipe.getRecipeName();
 //            ps = con.prepareStatement(sql);
 //            rs = ps.executeQuery();
@@ -478,11 +487,11 @@ public class RecipeManager implements Serializable {
 //            /* Lazy */
 //        }
         System.out.println(thisRecipe.getRecipeID());
-        
+
         newRecipe = new Recipe();
         init();
 //        newRecipe = new Recipe();
-         return "/faces/home?faces-redirect=true";
+        return "/faces/home?faces-redirect=true";
     }
 
     public String update() {
@@ -509,7 +518,7 @@ public class RecipeManager implements Serializable {
         init();
         return "/Recipe/RecipeView";
     }
-    
+
     public void editIngreUpdate() {
         ArrayList<String> tempIngreName = new ArrayList<String>();
         try {
@@ -534,7 +543,7 @@ public class RecipeManager implements Serializable {
             e.printStackTrace();
         }
     }
-    
+
     public void editTypeUpdate() {
         ArrayList<String> tempTypeName = new ArrayList<String>();
         try {
@@ -601,8 +610,7 @@ public class RecipeManager implements Serializable {
         search = "";
         return "/PrivateSearch.xhtml?faces-redirect=true";
     }
-    
-    
+
     //Public Search Does not work
     public String publicSearching() {
         mySearch = new ArrayList<Recipe>();
@@ -647,11 +655,11 @@ public class RecipeManager implements Serializable {
         search = "";
         return "/search.xhtml?faces-redirect=true";
     }
-    
+
     public String delete() {
         deleteIngre(thisRecipe.getRecipeID());
         deleteType(thisRecipe.getRecipeID());
-      try {
+        try {
             String sql = "delete from recipe where recipeName=?";
             ps = con.prepareStatement(sql);
             ps.setString(1, thisRecipe.getRecipeName());
@@ -662,16 +670,18 @@ public class RecipeManager implements Serializable {
         recs.remove(thisRecipe);
         return "/home?faces-redirect=true";
     }
+
     // Delete ingredient when delete recipe
     public void deleteIngre(int ID) {
         try {
             String sql = "delete from ingredient where recipeID=" + ID;
             ps = con.prepareStatement(sql);
             int i = ps.executeUpdate();
-        } catch ( SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
     // Delete type when delete recipe
     public void deleteType(int ID) {
         try {
@@ -682,7 +692,7 @@ public class RecipeManager implements Serializable {
             e.printStackTrace();
         }
     }
-    
+
     public String deleteIngree(Ingredient ing) {
         try {
             String sql = "delete from ingredient where rName=?";
@@ -705,6 +715,7 @@ public class RecipeManager implements Serializable {
         ingreName = "";
         return null;
     }
+
     // CALL THIS SHIT IN SAVE() AND USE THIS RECIPE TO ADD ALL INGREDIENTS TO DB
     // DO THE SAME WITH TYPES!!!!!
     public void insertIngreFinal(int ID) {
@@ -722,7 +733,7 @@ public class RecipeManager implements Serializable {
             }
         }
     }
-    
+
     public void insertTypeFinal(int ID) {
         for (int i = 0; i < maiType.size(); i++) {
             try {
@@ -741,12 +752,13 @@ public class RecipeManager implements Serializable {
         Collections.sort(recs, new Comparator<Recipe>() {
             @Override
             public int compare(Recipe r1, Recipe r2) {
-                if (r1.getRecipeID() < r2.getRecipeID())
+                if (r1.getRecipeID() < r2.getRecipeID()) {
                     return -1;
-                else if (r1.getRecipeID() == r2.getRecipeID())
+                } else if (r1.getRecipeID() == r2.getRecipeID()) {
                     return 0;
-                else
+                } else {
                     return 1;
+                }
             }
         });
         return recs;
@@ -755,43 +767,45 @@ public class RecipeManager implements Serializable {
     public String scale() {
         initializeIngredient();
         first = false;
-        myRatio = (double)myScale/thisRecipe.getServings();
-        for(int i = 0; i < myIngre.size(); i++) {
-            myIngre.get(i).setAmount(myIngre.get(i).getAmount()*myRatio);
+        myRatio = (double) myScale / thisRecipe.getServings();
+        for (int i = 0; i < myIngre.size(); i++) {
+            myIngre.get(i).setAmount(myIngre.get(i).getAmount() * myRatio);
         }
         return "/Recipe/RecipeView.xhtml";
     }
-    
+
     public String publicscale() {
         initializeIngredient();
         first = false;
-        myRatio = (double)myScale/thisRecipe.getServings();
-        for(int i = 0; i < myIngre.size(); i++) {
-            myIngre.get(i).setAmount(myIngre.get(i).getAmount()*myRatio);
+        view = false;
+        myRatio = (double) myScale / thisRecipe.getServings();
+        for (int i = 0; i < myIngre.size(); i++) {
+            myIngre.get(i).setAmount(myIngre.get(i).getAmount() * myRatio);
         }
         return "/Recipe/PublicView.xhtml";
     }
-    
+
     public String create() {
         myIngre = new ArrayList<Ingredient>();
         maiType = new ArrayList<Type>();
         first = false;
         return "faces/Recipe/RecipeCreate.xhtml";
     }
-    
+
     public String type(int maiType, int bak) {
         myType = new ArrayList<Recipe>();
         try {
             String sql = "select * from recType WHERE typeName=?";
             ps = con.prepareStatement(sql);
-            if (maiType == 1)
+            if (maiType == 1) {
                 ps.setString(1, "breakfast");
-            else if (maiType == 2)
+            } else if (maiType == 2) {
                 ps.setString(1, "lunch");
-            else if (maiType == 3)
+            } else if (maiType == 3) {
                 ps.setString(1, "dinner");
-            else
+            } else {
                 ps.setString(1, "dessert");
+            }
             rs = ps.executeQuery();
             while (rs.next()) {
                 for (int i = 0; i < recs.size(); i++) {
@@ -803,11 +817,13 @@ public class RecipeManager implements Serializable {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        if (bak == 1)
+        if (bak == 1) {
             return "/type.xhtml?faces-redirect=true";
-        else
+        } else {
             return "/PrivateType.xhtml?faces-redirect=true";
+        }
     }
+
     public void init() {
         recs = new ArrayList<Recipe>();
         try {
