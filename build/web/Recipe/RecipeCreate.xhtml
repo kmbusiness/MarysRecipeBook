@@ -170,7 +170,7 @@
                   <h:outputLabel value="Cook Time: " />
                   <h:inputText styleClass="form-control" value="#{RecipeManager.newRecipe.cookTime}"/>
                   <h:outputLabel value="Servings: " />
-                  <h:inputText styleClass="form-control" value="#{RecipeManager.newRecipe.servings}"/>
+                  <h:inputText styleClass="form-control" value="#{RecipeManager.newRecipe.servings}" onkeypress="if(event.which &lt; 48 || event.which &gt; 57) return false;"/>
                   <br/>
                   <h:outputLabel value="Image: " />
                   <h:inputFile value="#{RecipeManager.newRecipe.uploadImage}" />
