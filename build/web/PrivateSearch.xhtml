@@ -32,15 +32,21 @@
                         <h:inputText id="search" a:placeholder="Search..." value="#{RecipeManager.search}" styleClass="flipkart-navbar-input col-xs-11"/>
                         <h:commandButton value="Submit" action="#{RecipeManager.searching()}" styleClass="flipkart-navbar-button col-xs-1"/>
                         </h:form>
+<!--                          <button class="flipkart-navbar-button col-xs-1" type="submit">
+                              <svg width="15px" height="15px">
+                                  <path d="M11.618 9.897l4.224 4.212c.092.09.1.23.02.312l-1.464 1.46c-.08.08-.222.072-.314-.02L9.868 11.66M6.486 10.9c-2.42 0-4.38-1.955-4.38-4.367 0-2.413 1.96-4.37 4.38-4.37s4.38 1.957 4.38 4.37c0 2.412-1.96 4.368-4.38 4.368m0-10.834C2.904.066 0 2.96 0 6.533 0 10.105 2.904 13 6.486 13s6.487-2.895 6.487-6.467c0-3.572-2.905-6.467-6.487-6.467 "></path>
+                              </svg>
+                          </button>-->
                       </div>
                   </div>
                   <div class="largenav col-sm-2">
                     <ul class="largenav pull-right">
-<!--                      <li class="upper-links"><a class="links" href="#" data-toggle="modal" data-target=".bs-example-modal-sm">Log In</a></li>
-                      <li class="upper-links dropdown"><a class="links" href="#">Dropdown</a>
+                      <li class="upper-links"><a class="links" href="logout.jsp">Log Out</a></li>
+<!--                      <li class="upper-links"><a class="links" href="#{RecipeManager.create()}">Create Recipe</a></li>-->
+<!--                      <li class="upper-links dropdown"><a class="links" href="#">Recipes</a>
                           <ul class="dropdown-menu">
-                              <li class="profile-li"><a class="profile-links" href="RecipeCreate.xhtml">Create</a></li>
-                              <li class="profile-li"><a class="profile-links" href="#">Link</a></li>
+                              <li class="profile-li"><a class="profile-links" href="Recipe/RecipeCreate.xhtml">Create</a></li>
+                              <li class="profile-li"><a class="profile-links" href="#">Edit</a></li>
                           </ul>
                       </li>-->
                   </ul>
@@ -54,7 +60,6 @@
               <span class="sidenav-heading">Links</span>
               <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
           </div>
-          <a href="home.xhtml">Home</a>
           <a href="logout.jsp">Log Out</a>
 
 
@@ -103,6 +108,15 @@
       </div>
 
             
+  <footer>
+    <div class="container">
+      <p>Copyright ©2017 Mary's Recipe Book</p>
+      <ul class="list-inline">
+      </ul>
+    </div>
+  </footer>
+        
+        
         <h:outputScript library="js" name="jquery-3.1.1.min.js"/>
         <h:outputScript library="js" name="bootstrap.min.js"/>
         <h:outputScript library="js" name="function.js"/>

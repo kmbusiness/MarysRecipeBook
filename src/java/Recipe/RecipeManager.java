@@ -101,7 +101,8 @@ public class RecipeManager implements Serializable {
 
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/yeet?zeroDateTimeBehavior=convertToNull", "root", "1234");
+            con = DriverManager.getConnection("jdbc:mysql://mydbinstance.csbfyjmxbfgp.us-west-2.rds.amazonaws.com:3306/innodb?zeroDateTimeBehavior=convertToNull", "admin", "cecs493b");
+            //con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cook?zeroDateTimeBehavior=convertToNull", "root", "lovehurt");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(RecipeManager.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
@@ -279,7 +280,6 @@ public class RecipeManager implements Serializable {
                 ingre.setAmount(rs.getDouble("amount"));
                 ingre.setUnit(rs.getString("unit"));
                 myIngre.add(ingre);
-                System.out.println("Yup");
             }
         } catch (SQLException e) {
         }
@@ -428,7 +428,6 @@ public class RecipeManager implements Serializable {
                     DbxEntry.File uploadedFile = client.uploadFile("/" + newRecipe.getUploadImage().getSubmittedFileName(),
                             DbxWriteMode.add(), newRecipe.getUploadImage().getSize(), inputStream);
                     sharedUrl = client.createShareableUrl("/" + newRecipe.getUploadImage().getSubmittedFileName());
-                    System.out.println("Uploaded: " + uploadedFile.toString() + " URL " + sharedUrl);
 
                     //Default picture
                 } catch (DbxException ex) {
@@ -488,7 +487,6 @@ public class RecipeManager implements Serializable {
 //            e.printStackTrace();
 //            /* Lazy */
 //        }
-        System.out.println(thisRecipe.getRecipeID());
 
         newRecipe = new Recipe();
         init();
@@ -508,7 +506,6 @@ public class RecipeManager implements Serializable {
                     DbxEntry.File uploadedFile = client.uploadFile("/" + thisRecipe.getUploadImage().getSubmittedFileName(),
                             DbxWriteMode.add(), thisRecipe.getUploadImage().getSize(), inputStream);
                     sharedUrl = client.createShareableUrl("/" + thisRecipe.getUploadImage().getSubmittedFileName());
-                    System.out.println("Uploaded: " + uploadedFile.toString() + " URL " + sharedUrl);
                     //Default picture
                 } catch (DbxException ex) {
                     Logger.getLogger(RecipeManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -609,7 +606,8 @@ public class RecipeManager implements Serializable {
             rs = ps.executeQuery();
             while (rs.next()) {
                 for (int i = 0; i < recs.size(); i++) {
-                    if (recs.get(i).getRecipeID() == (rs.getInt("recipeID"))) {
+                    if (recs.get(i).getRecipeID() == (rs.getInt("recipeID"))
+                            && !mySearch.contains(recs.get(i))) {
                         mySearch.add(recs.get(i));
                     }
                 }
@@ -636,7 +634,14 @@ public class RecipeManager implements Serializable {
         }
 
         search = "";
-        return "/PrivateSearch.xhtml?faces-redirect=true";
+        if(mySearch.isEmpty())
+        {
+            return "/privateEmptySearch.xhtml?faces-redirect=true";
+        }
+        else
+        {
+            return "/PrivateSearch.xhtml?faces-redirect=true";
+        }
     }
 
     //Public Search Does not work
@@ -654,7 +659,8 @@ public class RecipeManager implements Serializable {
             rs = ps.executeQuery();
             while (rs.next()) {
                 for (int i = 0; i < recs.size(); i++) {
-                    if (recs.get(i).getRecipeID() == (rs.getInt("recipeID"))) {
+                    if (recs.get(i).getRecipeID() == (rs.getInt("recipeID"))
+                            && !mySearch.contains(recs.get(i))) {
                         mySearch.add(recs.get(i));
                     }
                 }
@@ -681,7 +687,15 @@ public class RecipeManager implements Serializable {
         }
 
         search = "";
-        return "/search.xhtml?faces-redirect=true";
+        
+        if(mySearch.isEmpty())
+        {
+            return "/emptysearch.xhtml?faces-redirect=true";
+        }
+        else
+        {
+            return "/search.xhtml?faces-redirect=true";
+        }
     }
 
     public String delete() {
@@ -737,7 +751,6 @@ public class RecipeManager implements Serializable {
     public String insertIngre() {
         Ingredient iningre = new Ingredient(ingreName, ingreAmount, ingreUnit);
         myIngre.add(iningre);
-        System.out.println(myIngre.size());
         ingreAmount = 0;
         ingreUnit = "";
         ingreName = "";
