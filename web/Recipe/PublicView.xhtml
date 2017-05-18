@@ -76,7 +76,7 @@
                     <li><b>Cook Time: </b><h:outputText value="#{RecipeManager.thisRecipe.cookTime}" /></li>
                     <li><b>Servings: </b> 
                       <h:form>
-                        <h:inputText id="serveInput" styleClass="" value="#{RecipeManager.myScale}" p:placeholder="supply value"/>
+                        <h:inputText id="serveInput" styleClass="" value="#{RecipeManager.myScale}" onkeypress="if(event.which &lt; 48 || event.which &gt; 57) return false;"/>
                         <h:commandButton styleClass="btn btn-primary" value="Submit" action="#{RecipeManager.publicscale()}" />
                       </h:form>
                     </li>
@@ -92,7 +92,7 @@
               <div class="row">
                 <div class="col-md-6">
                   <div class="table-responsive">
-                    <h4 class="text-center">Ingredients</h4>
+                    <h4 class="">Ingredients</h4>
                     <h:form>
                     <h:dataTable styleClass="table table-condensed" value="#{RecipeManager.myIngre}" var="ingre" >
                       <h:column>
@@ -109,7 +109,7 @@
                   </h:dataTable>
                   </h:form>
                     <br/>
-                    <h4 class="text-center">Types</h4>
+                    <h4 class="">Types</h4>
                   <h:form>
                     <h:dataTable styleClass="table table-condensed" value="#{RecipeManager.maiType}" var="type" >
                       <h:column>
@@ -125,7 +125,7 @@
                 </div>
                 </div>
                 <div class="col-md-6">
-                  <h4 class="text-center">Steps</h4>
+                  <h4 class="">Steps</h4>
                   <span><h:outputText value="#{RecipeManager.thisRecipe.desRep}" escape="false"/></span>
                 </div>
               </div>
